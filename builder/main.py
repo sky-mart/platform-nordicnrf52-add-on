@@ -116,6 +116,26 @@ if isdir(usb_path2):
         ]
     )
 
+softdevice_name = board.get("build.softdevice.sd_name")
+if not softdevice_name: # If softdevice is not present
+    env.Append(
+        CPPPATH=[
+            join(NORDIC_DIR, "softdevice", "none_nrf52_0.0.0_API", "include"),
+            join(NORDIC_DIR, "softdevice", "none_nrf52_0.0.0_API", "include", "nrf52")
+        ],
+    )
+
+    if not board.get("build.ldscript", ""):
+        # Update linker script:
+        ldscript_dir = join(CORE_DIR, "linker")
+        ldscript_name = board.get("build.arduino.ldscript", "")
+        if ldscript_name:
+            env.Append(LIBPATH=[ldscript_dir])
+            env.Replace(LDSCRIPT_PATH=ldscript_name)
+        else:
+            print("Warning! Cannot find an appropriate linker script for the "
+                  "required softdevice!")
+
 # Allow user to override via pre:script
 if env.get("PROGNAME", "program") == "program":
     env.Replace(PROGNAME="firmware")

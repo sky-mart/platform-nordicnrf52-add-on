@@ -5,7 +5,7 @@
     },
     "core": "nRF5",
     "cpu": "cortex-m4",
-    "extra_flags": "-DARDUINO_NRF52840_PCA10059 -DNRF52840_XXAA -DNDFU -USOFTDEVICE_PRESENT",
+    "extra_flags": "-DARDUINO_NRF52840_PCA10059 -DNRF52840_XXAA -DNDFU",
     "f_cpu": "64000000L",
     "hwids": [
       [
