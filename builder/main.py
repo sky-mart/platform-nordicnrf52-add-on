@@ -41,9 +41,9 @@ def BeforeUpload(target, source, env):  # pylint: disable=W0613,W0621
     if bool(upload_options.get("wait_for_upload_port", False)):
         env.Replace(UPLOAD_PORT=env.WaitForNewSerialPort(before_ports))
 
-    # use only port name for BOSSA
+    # use only port name for BOSSA or Nordic's nrfutil
     if ("/" in env.subst("$UPLOAD_PORT") and
-            env.subst("$UPLOAD_PROTOCOL") == "sam-ba"):
+            (env.subst("$UPLOAD_PROTOCOL") == "sam-ba" or env.subst("$UPLOAD_PROTOCOL") == "nordic_nrfutil_boot")):
         env.Replace(UPLOAD_PORT=basename(env.subst("$UPLOAD_PORT")))
 
 
@@ -370,18 +370,16 @@ elif upload_protocol == "nrfutil":
 
 elif upload_protocol == "nordic_nrfutil_boot":
     env.Replace(
-        UPLOADER=join(platform.get_package_dir(
-            "tool-adafruit-nrfutil") or "", "adafruit-nrfutil.py"),
+        UPLOADER='nrfutil',
         UPLOADERFLAGS=[
             "dfu",
             "serial",
             "-p",
             "$UPLOAD_PORT",
             "-b",
-            "$UPLOAD_SPEED",
-            "--singlebank",
+            "$UPLOAD_SPEED"
         ],
-        UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS -pkg $SOURCE'
+        UPLOADCMD='"$UPLOADER" $UPLOADERFLAGS -pkg $SOURCE'
     )
     upload_actions = [
         env.VerboseAction(BeforeUpload, "Looking for upload port..."),

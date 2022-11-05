@@ -5,7 +5,7 @@
     },
     "core": "nRF5",
     "cpu": "cortex-m4",
-    "extra_flags": "-DARDUINO_NRF52840_PCA10059 -DNRF52840_XXAA -DNDFU",
+    "extra_flags": "-DARDUINO_NRF52840_PCA10059 -DNRF52840_XXAA -DNDFU -USOFTDEVICE_PRESENT",
     "f_cpu": "64000000L",
     "hwids": [
       [
@@ -21,7 +21,7 @@
     },
     "softdevice": {
       "sd_flags": "",
-      "sd_name": "None",
+      "sd_name": "",
       "sd_version": "0.0.0",
       "sd_fwid": "0x0000"
     },
