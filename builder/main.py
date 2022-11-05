@@ -123,12 +123,28 @@ env.Append(
 
 upload_protocol = env.subst("$UPLOAD_PROTOCOL")
 
-if "nrfutil" == upload_protocol or (
+if "nrfutil" == upload_protocol or "nordic_nrfutil_boot" == upload_protocol or (
     board.get("build.bsp.name", "nrf5") == "adafruit"
     and "arduino" in env.get("PIOFRAMEWORK", [])
 ):
     env.Append(
         BUILDERS=dict(
+            PackageNDfu=Builder(
+                action=env.VerboseAction(" ".join([
+                    "nrfutil",
+                    "pkg",
+                    "generate",
+                    "--hw-version",
+                    "52",
+                    "--sd-req=0x00",
+                    "--application",
+                    "$SOURCES",
+                    "--application-version",
+                    "1",
+                    "$TARGET"
+                ]), "Building $TARGET"),
+                suffix=".zip"
+            ),
             PackageDfu=Builder(
                 action=env.VerboseAction(" ".join([
                     '"$PYTHONEXE"',
@@ -202,6 +218,10 @@ else:
         target_firm = env.PackageDfu(
             join("$BUILD_DIR", "${PROGNAME}"),
             env.ElfToHex(join("$BUILD_DIR", "${PROGNAME}"), target_elf))
+    elif "nordic_nrfutil_boot" == upload_protocol:
+        target_firm = env.PackageNDfu(
+            join("$BUILD_DIR", "${PROGNAME}"),
+            env.ElfToBin(join("$BUILD_DIR", "${PROGNAME}"), target_elf))  
     elif "nrfjprog" == upload_protocol:
         target_firm = env.ElfToHex(
             join("$BUILD_DIR", "${PROGNAME}"), target_elf)
@@ -234,6 +254,16 @@ if "DFUBOOTHEX" in env:
         ),
         target_firm,
         "Generate DFU Image",
+    )
+
+    env.AddPlatformTarget(
+        "ndfu",
+        env.PackageNDfu(
+            join("$BUILD_DIR", "${PROGNAME}"),
+            env.ElfToBin(join("$BUILD_DIR", "${PROGNAME}"), target_elf),
+        ),
+        target_firm,
+        "Generate Nordic's DFU Image",
     )
 
     env.AddPlatformTarget(
@@ -319,6 +349,26 @@ elif upload_protocol == "nrfjprog":
     upload_actions = [env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE")]
 
 elif upload_protocol == "nrfutil":
+    env.Replace(
+        UPLOADER=join(platform.get_package_dir(
+            "tool-adafruit-nrfutil") or "", "adafruit-nrfutil.py"),
+        UPLOADERFLAGS=[
+            "dfu",
+            "serial",
+            "-p",
+            "$UPLOAD_PORT",
+            "-b",
+            "$UPLOAD_SPEED",
+            "--singlebank",
+        ],
+        UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS -pkg $SOURCE'
+    )
+    upload_actions = [
+        env.VerboseAction(BeforeUpload, "Looking for upload port..."),
+        env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE")
+    ]
+
+elif upload_protocol == "nordic_nrfutil_boot":
     env.Replace(
         UPLOADER=join(platform.get_package_dir(
             "tool-adafruit-nrfutil") or "", "adafruit-nrfutil.py"),
