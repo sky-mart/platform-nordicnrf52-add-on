@@ -23,6 +23,7 @@ from SCons.Script import (ARGUMENTS, COMMAND_LINE_TARGETS, AlwaysBuild,
 from platformio.public import list_serial_ports
 
 
+
 def BeforeUpload(target, source, env):  # pylint: disable=W0613,W0621
     env.AutodetectUploadPort()
 
@@ -52,6 +53,27 @@ platform = env.PioPlatform()
 board = env.BoardConfig()
 variant = board.get("build.variant", "")
 
+FRAMEWORK_DIR = platform.get_package_dir("framework-arduinoadafruitnrf52")
+assert isdir(FRAMEWORK_DIR)
+
+CMSIS_DIR = platform.get_package_dir("framework-cmsis")
+assert isdir(CMSIS_DIR)
+
+CORE_DIR = join(FRAMEWORK_DIR, "cores", board.get("build.core"))
+assert isdir(CORE_DIR)
+
+NORDIC_DIR = join(CORE_DIR, "nordic")
+assert isdir(NORDIC_DIR)
+
+TOOLS_DIR = join(FRAMEWORK_DIR, "tools")
+assert isdir(TOOLS_DIR)
+
+# Directory where Nordic's NRFUTIL is located
+NRFUTIL_DIR = join(TOOLS_DIR, "tools")
+if not isdir(NRFUTIL_DIR):
+    print('ERROR: Incorrect package, please change your package in plaformio.ini file to: "platform_packages = framework-arduinoadafruitnrf52@https://gitlab.nsoric.com/mtf/mcu/nrf5-arduino-framework-add-on.git". Check if link is valid before pasting.')
+assert isdir(NRFUTIL_DIR)
+
 env.Replace(
     AR="arm-none-eabi-ar",
     AS="arm-none-eabi-as",
@@ -74,6 +96,25 @@ env.Replace(
 
     PROGSUFFIX=".elf"
 )
+
+# Appending missng include paths
+usb_path2 = join(CORE_DIR, "TinyUSB", "Adafruit_TinyUSB_ArduinoCore", "tinyusb", "src")
+if isdir(usb_path2):
+    if env.subst("$BOARD") != "adafruit_feather_nrf52832":
+        env.Append(
+            CPPDEFINES=[
+                "USBCON",
+                "USE_TINYUSB"
+            ]
+        )
+
+    env.Append(
+        CPPPATH=[
+            join(CORE_DIR, "TinyUSB", "Adafruit_TinyUSB_ArduinoCore", "tinyusb", "src"),
+            join(CORE_DIR, "TinyUSB", "Adafruit_TinyUSB_ArduinoCore"),
+            join(CORE_DIR, "TinyUSB")
+        ]
+    )
 
 # Allow user to override via pre:script
 if env.get("PROGNAME", "program") == "program":
@@ -131,7 +172,7 @@ if "nrfutil" == upload_protocol or "nordic_nrfutil_boot" == upload_protocol or (
         BUILDERS=dict(
             PackageNDfu=Builder(
                 action=env.VerboseAction(" ".join([
-                    "nrfutil",
+                    '"%s"' % join(NRFUTIL_DIR, "nrfutil.exe"),
                     "pkg",
                     "generate",
                     "--hw-version",
@@ -370,7 +411,7 @@ elif upload_protocol == "nrfutil":
 
 elif upload_protocol == "nordic_nrfutil_boot":
     env.Replace(
-        UPLOADER='nrfutil',
+        UPLOADER='"%s"' % join(NRFUTIL_DIR, "nrfutil.exe"),
         UPLOADERFLAGS=[
             "dfu",
             "serial",
