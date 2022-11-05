@@ -1,0 +1,57 @@
+{
+  "build": {
+    "arduino":{
+      "ldscript": "nrf52840_blank.ld"
+    },
+    "core": "nRF5",
+    "cpu": "cortex-m4",
+    "extra_flags": "-DARDUINO_NRF52840_PCA10059 -DNRF52840_XXAA -DNDFU",
+    "f_cpu": "64000000L",
+    "hwids": [
+      [
+        "0x239A",
+        "0x0029"
+      ]
+    ],
+    "usb_product": "Nordic nRF52840 Dongle",
+    "mcu": "nrf52840",
+    "variant": "pca10059",
+    "bsp": {
+      "name": "adafruit"
+    },
+    "softdevice": {
+      "sd_flags": "",
+      "sd_name": "None",
+      "sd_version": "0.0.0",
+      "sd_fwid": "0x0000"
+    },
+    "bootloader": {
+      "settings_addr": "0xFF000"
+    }
+  },
+  "connectivity": [
+    "bluetooth"
+  ],
+  "debug": {
+    "jlink_device": "nRF52840_xxAA",
+    "svd_path": "nrf52840.svd"
+  },
+  "frameworks": [
+    "arduino"
+  ],
+  "name": "Nordic nRF52840 Dongle (Adafruit BSP, Nordic's DFU)",
+  "upload": {
+    "maximum_ram_size": 237568,
+    "maximum_size": 913408,
+    "speed": 115200,
+    "protocol": "nordic_nrfutil_boot",
+    "protocols": [
+      "nordic_nrfutil_boot"
+    ],
+    "use_1200bps_touch": false,
+    "require_upload_port": true,
+    "wait_for_upload_port": false
+  },
+  "url": "https://www.nordicsemi.com/Software-and-Tools/Development-Kits/nRF52840-Dongle",
+  "vendor": "Nordic"
+}
