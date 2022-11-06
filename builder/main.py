@@ -71,10 +71,13 @@ assert isdir(TOOLS_DIR)
 # Directory where Nordic's NRFUTIL is located
 if system() == "Windows":
     NRFUTIL_DIR = join(TOOLS_DIR, "nrfutil", "win32")
+    NRFUTIL_FILE_NAME = "nrfutil.exe"
 elif system() == "Darwin":
     NRFUTIL_DIR = join(TOOLS_DIR, "nrfutil", "macosx")
+    NRFUTIL_FILE_NAME = "nrfutil"
 elif system() == "Linux":
     NRFUTIL_DIR = join(TOOLS_DIR, "nrfutil", "linux")
+    NRFUTIL_FILE_NAME = "nrfutil"
 else:
     print('ERROR: Unsupported OS.')
     assert False
@@ -201,7 +204,7 @@ if "nrfutil" == upload_protocol or "nordic_nrfutil_boot" == upload_protocol or (
         BUILDERS=dict(
             PackageNDfu=Builder(
                 action=env.VerboseAction(" ".join([
-                    '"%s"' % join(NRFUTIL_DIR, "nrfutil.exe"),
+                    '"%s"' % join(NRFUTIL_DIR, NRFUTIL_FILE_NAME),
                     "pkg",
                     "generate",
                     "--hw-version",
@@ -440,7 +443,7 @@ elif upload_protocol == "nrfutil":
 
 elif upload_protocol == "nordic_nrfutil_boot":
     env.Replace(
-        UPLOADER='"%s"' % join(NRFUTIL_DIR, "nrfutil.exe"),
+        UPLOADER='"%s"' % join(NRFUTIL_DIR, NRFUTIL_FILE_NAME),
         UPLOADERFLAGS=[
             "dfu",
             "serial",
