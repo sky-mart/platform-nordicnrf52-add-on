@@ -69,7 +69,16 @@ TOOLS_DIR = join(FRAMEWORK_DIR, "tools")
 assert isdir(TOOLS_DIR)
 
 # Directory where Nordic's NRFUTIL is located
-NRFUTIL_DIR = join(TOOLS_DIR, "nrfutil")
+if system() == "Windows":
+    NRFUTIL_DIR = join(TOOLS_DIR, "nrfutil", "win32")
+elif system() == "Darwin":
+    NRFUTIL_DIR = join(TOOLS_DIR, "nrfutil", "macosx")
+elif system() == "Linux":
+    NRFUTIL_DIR = join(TOOLS_DIR, "nrfutil", "linux")
+else:
+    print('ERROR: Unsupported OS.')
+    assert False
+
 if not isdir(NRFUTIL_DIR):
     print('ERROR: Incorrect package, please change your package in plaformio.ini file to: "platform_packages = framework-arduinoadafruitnrf52@https://gitlab.nsoric.com/mtf/mcu/nrf5-arduino-framework-add-on.git". Check if link is valid before pasting.')
 assert isdir(NRFUTIL_DIR)
