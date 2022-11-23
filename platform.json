@@ -56,7 +56,7 @@
     "framework-arduinoadafruitnrf52": {
       "type": "framework",
       "optional": true,
-      "version": "https://gitlab.nsoric.com/mtf/mcu/platform-nordicnrf52-add-on.git"
+      "version": "https://gitlab.nsoric.com/mtf/mcu/nrf5-arduino-framework-add-on.git"
     },
     "framework-arduino-mbed": {
       "type": "framework",
