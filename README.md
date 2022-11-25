@@ -31,7 +31,7 @@ board = ...
 ...
 ```
 # Add-on
-Added support of Nordic's PCA10059 dongle board equiped with nRF52840 SoC, which has pre-flashed Nordic's DFU bootloader. We have excluded SoftDevice, so it has more FLASH and RAM memory available.
+Added support of Nordic's PCA10059 dongle board equiped with nRF52840 SoC, which has pre-flashed Nordic's DFU bootloader. We have excluded SoftDevice, so it has more FLASH and RAM memory available. The original version of the platform can be found [here](https://github.com/platformio/platform-nordicnrf52).
 
 # Configuration
 
