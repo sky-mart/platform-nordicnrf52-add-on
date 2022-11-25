@@ -9,7 +9,7 @@ The nRF52 Series are built for speed to carry out increasingly complex tasks in 
 
 1. [Install PlatformIO](https://platformio.org)
 2. Open PIO Home > Platforms and select *Advanced Installation* option. Paste the repository URL to the text input:
-`https://gitlab.nsoric.com/mtf/mcu/platform-nordicnrf52-add-on.git`
+`https://gitlab.nsoric.com/mtf/mcu/nrf52/platform-nordicnrf52-add-on.git`
 3. Wait until platform is installed.
 4. Create PlatformIO project and select one board from the *Nordicnrf52-add-on* folder.
 
@@ -26,7 +26,7 @@ board = ...
 
 ```ini
 [env:development]
-platform = https://gitlab.nsoric.com/mtf/mcu/platform-nordicnrf52-add-on.git
+platform = https://gitlab.nsoric.com/mtf/mcu/nrf52/platform-nordicnrf52-add-on.git
 board = ...
 ...
 ```
