@@ -46,7 +46,13 @@
     "speed": 115200,
     "protocol": "nordic_nrfutil_boot",
     "protocols": [
-      "nordic_nrfutil_boot"
+      "nordic_nrfutil_boot",
+      "jlink",
+      "nrfjprog",
+      "stlink",
+      "blackmagic",
+      "cmsis-dap",
+      "mbed"
     ],
     "use_1200bps_touch": false,
     "require_upload_port": true,
