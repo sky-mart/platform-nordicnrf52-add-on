@@ -22,7 +22,7 @@
   "version": "9.4.0",
   "frameworks": {
     "arduino": {
-      "package": "framework-arduinonordicnrf52",
+      "package": "framework-arduinoadafruitnrf52",
       "script": "builder/frameworks/arduino.py"
     },
     "mbed": {
