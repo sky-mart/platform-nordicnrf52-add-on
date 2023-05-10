@@ -1,6 +1,5 @@
-# Copyright 2022 MAtej Fitoš
-#
 # Copyright 2014-present PlatformIO <contact@platformio.org>
+# Copyright 2022 Matej Fitoš
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,7 +45,7 @@ def BeforeUpload(target, source, env):  # pylint: disable=W0613,W0621
     if bool(upload_options.get("wait_for_upload_port", False)):
         env.Replace(UPLOAD_PORT=env.WaitForNewSerialPort(before_ports))
 
-    # use only port name for BOSSA or Nordic's nrfutil
+    # use only port name for BOSSA
     if ("/" in env.subst("$UPLOAD_PORT") and
             (env.subst("$UPLOAD_PROTOCOL") == "sam-ba")):
         env.Replace(UPLOAD_PORT=basename(env.subst("$UPLOAD_PORT")))
@@ -57,7 +56,7 @@ platform = env.PioPlatform()
 board = env.BoardConfig()
 variant = board.get("build.variant", "")
 
-FRAMEWORK_DIR = platform.get_package_dir("framework-arduinoadafruitnrf52")
+FRAMEWORK_DIR = platform.get_package_dir("framework-arduinoadafruitnrf52-addon")
 assert isdir(FRAMEWORK_DIR)
 
 CMSIS_DIR = platform.get_package_dir("framework-cmsis")
@@ -87,7 +86,7 @@ else:
     assert False
 
 if not isdir(NRFUTIL_DIR):
-    print('ERROR: Incorrect package, please change your package in plaformio.ini file to: "platform_packages = framework-arduinoadafruitnrf52@https://gitlab.nsoric.com/mtf/mcu/nrf5-arduino-framework-add-on.git". Check if link is valid before pasting.')
+    print('ERROR: Incorrect package name.')
 assert isdir(NRFUTIL_DIR)
 
 env.Replace(
@@ -246,7 +245,7 @@ if "nrfutil" == upload_protocol or "nordic_nrfutil_boot" == upload_protocol or (
                             '"$PYTHONEXE"',
                             '"%s"' % join(
                                 platform.get_package_dir(
-                                    "framework-arduinoadafruitnrf52"
+                                    "framework-arduinoadafruitnrf52-addon"
                                 )
                                 or "",
                                 "tools",
@@ -459,7 +458,7 @@ elif upload_protocol == "nordic_nrfutil_boot":
         UPLOADCMD='"$UPLOADER" $UPLOADERFLAGS -pkg $SOURCE'
     )
     upload_actions = [
-        #env.VerboseAction(BeforeUpload, "Looking for upload port..."),
+        env.VerboseAction(BeforeUpload, "Looking for upload port..."),
         env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE")
     ]
 
