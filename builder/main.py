@@ -1,5 +1,5 @@
 # Copyright 2014-present PlatformIO <contact@platformio.org>
-# Copyright 2022 Matej Fitoš
+# Copyright 2022 Matej Fitos
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# This file has been modified by Matej Fitoš to add support for PCA10059NDFU board.
+# This file has been modified by Matej Fitos to add support for nordic DFU bootloader board.
 
 import sys
 from platform import system
@@ -25,7 +25,30 @@ from SCons.Script import (ARGUMENTS, COMMAND_LINE_TARGETS, AlwaysBuild,
 
 from platformio.public import list_serial_ports
 
+env = DefaultEnvironment()
+platform = env.PioPlatform()
 
+FRAMEWORK_DIR = platform.get_package_dir("framework-arduinoadafruitnrf52-addon")
+assert isdir(FRAMEWORK_DIR)
+
+TOOLS_DIR = join(FRAMEWORK_DIR, "tools")
+assert isdir(TOOLS_DIR)
+
+# Directory where Nordic's NRFUTIL is located
+if system() == "Windows":
+    NRFUTIL_DIR = join(TOOLS_DIR, "nrfutil", "win32")
+    NRFUTIL_FILE_NAME = "nrfutil.exe"
+elif system() == "Darwin":
+    NRFUTIL_DIR = join(TOOLS_DIR, "nrfutil", "macosx")
+    NRFUTIL_FILE_NAME = "nrfutil"
+elif system() == "Linux":
+    NRFUTIL_DIR = join(TOOLS_DIR, "nrfutil", "linux")
+    NRFUTIL_FILE_NAME = "nrfutil"
+else:
+    print('ERROR: Unsupported OS.')
+    assert False
+
+assert isdir(NRFUTIL_DIR)
 
 def BeforeUpload(target, source, env):  # pylint: disable=W0613,W0621
     env.AutodetectUploadPort()
@@ -56,39 +79,6 @@ platform = env.PioPlatform()
 board = env.BoardConfig()
 variant = board.get("build.variant", "")
 
-FRAMEWORK_DIR = platform.get_package_dir("framework-arduinoadafruitnrf52-addon")
-assert isdir(FRAMEWORK_DIR)
-
-CMSIS_DIR = platform.get_package_dir("framework-cmsis")
-assert isdir(CMSIS_DIR)
-
-CORE_DIR = join(FRAMEWORK_DIR, "cores", board.get("build.core"))
-assert isdir(CORE_DIR)
-
-NORDIC_DIR = join(CORE_DIR, "nordic")
-assert isdir(NORDIC_DIR)
-
-TOOLS_DIR = join(FRAMEWORK_DIR, "tools")
-assert isdir(TOOLS_DIR)
-
-# Directory where Nordic's NRFUTIL is located
-if system() == "Windows":
-    NRFUTIL_DIR = join(TOOLS_DIR, "nrfutil", "win32")
-    NRFUTIL_FILE_NAME = "nrfutil.exe"
-elif system() == "Darwin":
-    NRFUTIL_DIR = join(TOOLS_DIR, "nrfutil", "macosx")
-    NRFUTIL_FILE_NAME = "nrfutil"
-elif system() == "Linux":
-    NRFUTIL_DIR = join(TOOLS_DIR, "nrfutil", "linux")
-    NRFUTIL_FILE_NAME = "nrfutil"
-else:
-    print('ERROR: Unsupported OS.')
-    assert False
-
-if not isdir(NRFUTIL_DIR):
-    print('ERROR: Incorrect package name.')
-assert isdir(NRFUTIL_DIR)
-
 env.Replace(
     AR="arm-none-eabi-ar",
     AS="arm-none-eabi-as",
@@ -112,44 +102,6 @@ env.Replace(
     PROGSUFFIX=".elf"
 )
 
-# Appending missng include paths
-usb_path2 = join(CORE_DIR, "TinyUSB", "Adafruit_TinyUSB_ArduinoCore", "tinyusb", "src")
-if isdir(usb_path2):
-    if env.subst("$BOARD") != "adafruit_feather_nrf52832":
-        env.Append(
-            CPPDEFINES=[
-                "USBCON",
-                "USE_TINYUSB"
-            ]
-        )
-
-    env.Append(
-        CPPPATH=[
-            join(CORE_DIR, "TinyUSB", "Adafruit_TinyUSB_ArduinoCore", "tinyusb", "src"),
-            join(CORE_DIR, "TinyUSB", "Adafruit_TinyUSB_ArduinoCore"),
-            join(CORE_DIR, "TinyUSB")
-        ]
-    )
-
-softdevice_name = board.get("build.softdevice.sd_name")
-if not softdevice_name: # If softdevice is not present
-    env.Append(
-        CPPPATH=[
-            join(NORDIC_DIR, "softdevice", "none_nrf52_0.0.0_API", "include"),
-            join(NORDIC_DIR, "softdevice", "none_nrf52_0.0.0_API", "include", "nrf52")
-        ],
-    )
-
-    if not board.get("build.ldscript", ""):
-        # Update linker script:
-        ldscript_dir = join(CORE_DIR, "linker")
-        ldscript_name = board.get("build.arduino.ldscript", "")
-        if ldscript_name:
-            env.Append(LIBPATH=[ldscript_dir])
-            env.Replace(LDSCRIPT_PATH=ldscript_name)
-        else:
-            print("Warning! Cannot find an appropriate linker script for the "
-                  "required softdevice!")
 
 # Allow user to override via pre:script
 if env.get("PROGNAME", "program") == "program":
