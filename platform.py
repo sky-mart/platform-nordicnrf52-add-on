@@ -1,6 +1,5 @@
-# Copyright 2022 Matej Fitoš
-#
-# Copyright 2014-present PlatformIO <contact@platformio.org>
+# Copyright 2014-2023 PlatformIO <contact@platformio.org>
+# Copyright 2023 Matej Fitoš
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -42,7 +41,7 @@ class Nordicnrf52addonPlatform(PlatformBase):
             if self.board_config(board).get("build.bsp.name",
                                             "nrf5") == "adafruit":
                 self.frameworks["arduino"][
-                    "package"] = "framework-arduinoadafruitnrf52"
+                    "package"] = "framework-arduinoadafruitnrf52-addon"
                 self.packages["framework-cmsis"]["optional"] = False
                 self.packages["tool-adafruit-nrfutil"]["optional"] = False
 

@@ -22,7 +22,7 @@
   "version": "9.4.0",
   "frameworks": {
     "arduino": {
-      "package": "framework-arduinonordicnrf52",
+      "package": "framework-arduinoadafruitnrf52-addon",
       "script": "builder/frameworks/arduino.py"
     },
     "mbed": {
@@ -53,7 +53,7 @@
         "~6.51506.0"
       ]
     },
-    "framework-arduinoadafruitnrf52": {
+    "framework-arduinoadafruitnrf52-addon": {
       "type": "framework",
       "optional": true,
       "version": "https://gitlab.nsoric.com/mtf/mcu/nrf52/nrf5-arduino-framework-add-on.git"
@@ -62,7 +62,7 @@
       "type": "framework",
       "optional": true,
       "owner": "platformio",
-      "version": "~3.1.1"
+      "version": "~4.0.2"
     },
     "framework-cmsis": {
       "type": "framework",
