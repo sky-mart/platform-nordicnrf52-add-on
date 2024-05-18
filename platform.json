@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.nsoric.com/mtf/mcu/nrf52/platform-nordicnrf52-add-on.git"
+    "url": "https://github.com/sky-mart//platform-nordicnrf52-add-on.git"
   },
   "version": "9.4.0",
   "frameworks": {
@@ -56,7 +56,7 @@
     "framework-arduinoadafruitnrf52-addon": {
       "type": "framework",
       "optional": true,
-      "version": "https://gitlab.nsoric.com/mtf/mcu/nrf52/nrf5-arduino-framework-add-on.git"
+      "version": "https://github.com/sky-mart/nrf5-arduino-framework-add-on.git"
     },
     "framework-arduino-mbed": {
       "type": "framework",
